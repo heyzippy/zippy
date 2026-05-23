@@ -29,7 +29,7 @@ zippy workspaces create          # create a workspace (alias: zippy orgs)
 zippy workspaces list
 zippy evaluations run            # run an evaluation against course content (alias: zippy eval)
 zippy skills                     # inspect skills from local content files
-zippy lessons {create,update,validate,list}
+zippy lessons {create,update,validate,list,init,save,push}
 zippy rubrics  {create,update,list}
 zippy assets   {upload,list,publish}   # alias: zippy files
 ```
