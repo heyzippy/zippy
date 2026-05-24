@@ -1,42 +1,20 @@
 ---
-name = "zippy_lesson"
-description = "Zippy Lesson Format"
-tags = ["zippy", "content", "generation"]
+name: zippy-lessons
+description: Use when the user wants to author a Zippy lesson in MDX — Callout, Sticky, Question (mcq/free_text/essay/DragDrop/FillBlank), evaluation. Activate when user mentions zippy lesson, writing a lesson, MDX components, or interactive questions for an educational platform.
 ---
 
 # Zippy Lesson Format
 
+Prerequisite: if `zippy` is not installed or you need to authenticate, see the `zippy` skill first.
+
 ## Workflow
 
-Use file tools (Write, Edit, Read) to build MDX content. Use the execution environment skill for API calls.
-
-### Step 1: Plan with todos
-
-Use the builtin `write_todos` tool to outline your lesson sections (intro, content blocks, questions, celebration). Do NOT write todos to a file.
-
-### Step 2: Build MDX content in a local file
-
-Write the skeleton with frontmatter and first section:
-
-```
-Write({"file_path": "lessons/<title-slug>.mdx", "content": "---\ntitle: \"...\"\n---\n\n# Title\n\n<Callout style=\"instruction\">...</Callout>\n"})
-```
-
-Then add each section with Edit — questions, sticky refs, page breaks, celebration.
-
-### Step 3: Validate
-
-Validate the content (the parent agent has the right tool for your environment).
-
-If errors, fix with `Edit`, re-validate.
-
-### Step 4: Save
-
-Save the content to the backend. Returns the saved record.
-
-### Step 5: Share the link
-
-Share the content link with the user.
+1. Plan with `write_todos` — outline lesson sections (intro, content blocks, questions, celebration).
+2. Scaffold a local file: `zippy lessons init <id>` (see `zippy lessons init --help`), or write the MDX manually with the Write tool using the format below.
+3. Edit content with the Edit or Write tool.
+4. Validate: `zippy lessons validate <id>` (see `zippy lessons validate --help`). If errors, fix with Edit and re-validate.
+5. Push to the backend: `zippy lessons push <id>`.
+6. Share the returned link with the user.
 
 ## MDX Format
 
@@ -145,8 +123,8 @@ String values use double quotes: `stem="What?"`, `kind="mcq"`
 
 Arrays and objects use curly braces `={...}`:
 ```
-✅ options={[{"id":"a","text":"Yes","correct":true}]}
-❌ options='[{"id":"a","text":"Yes"}]'   ← WILL FAIL VALIDATION
+correct:  options={[{"id":"a","text":"Yes","correct":true}]}
+wrong:    options='[{"id":"a","text":"Yes"}]'   <- WILL FAIL VALIDATION
 ```
 
 ## Lesson Structure Guidelines

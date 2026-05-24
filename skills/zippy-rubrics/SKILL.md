@@ -1,19 +1,22 @@
 ---
-name = "zippy_rubric"
-description = "Zippy Rubric Format"
-tags = ["zippy", "content", "generation"]
+name: zippy-rubrics
+description: Use when the user wants to author a Zippy rubric — descriptor/range/score ratings, MOE SEAB-aligned scoring, criteria with levels. Activate when user mentions zippy rubric, scoring rubric, MOE composition scoring, descriptor rubric, or assessment criteria.
 ---
 
 # Zippy Rubric Format
 
+Prerequisite: if `zippy` is not installed or you need to authenticate, see the `zippy` skill first.
+
 ## Workflow
 
-1. Plan with the builtin `write_todos` tool (criteria, levels, rating type) — do NOT write todos to a file
-2. Write rubric JSON to a local file
-3. Validate the content (the parent agent has the right tool for your environment)
-4. If errors: fix with `Edit`, re-validate
-5. Save the content to the backend
-6. Share the link with the user
+1. Plan with `write_todos` — decide on criteria, levels, and rating type.
+2. Write the rubric JSON to a local file using the Write tool.
+3. Create or update via CLI:
+   ```bash
+   zippy rubrics create --file <path>
+   zippy rubrics update <id> --file <path>
+   ```
+4. Verify: `zippy rubrics list`.
 
 ## JSON Structure
 
@@ -22,8 +25,8 @@ Each criterion MUST have `id`, `label`, `ratings` (array with SAME length as `sc
 
 **CRITICAL — scale.levels format:**
 ```json
-✅ "levels": [{"label": "Beginning"}, {"label": "Developing"}]
-❌ "levels": ["Beginning", "Developing"]  ← WILL FAIL — must be objects with "label" key
+correct:  "levels": [{"label": "Beginning"}, {"label": "Developing"}]
+wrong:    "levels": ["Beginning", "Developing"]  <- WILL FAIL — must be objects with "label" key
 ```
 
 ## Rating Types

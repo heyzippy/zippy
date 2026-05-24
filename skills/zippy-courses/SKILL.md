@@ -1,10 +1,11 @@
 ---
-name = "zippy_course"
-description = "Zippy Course Pack Format"
-tags = ["zippy", "content", "generation"]
+name: zippy-courses
+description: Use when the user wants to create, structure, or publish a Zippy course pack — course.yaml, workspace.yaml, unit organization. Activate when user mentions zippy course, course pack, units.yaml, or workspace structure.
 ---
 
 # Zippy Course Pack Format
+
+Prerequisite: if `zippy` is not installed or you need to authenticate, see the `zippy` skill first.
 
 A course pack is a directory of YAML and Markdown files pushed via the CLI.
 
@@ -203,42 +204,32 @@ For save-only (no AI feedback): `evaluation={{}}` or `evaluation={{"evaluation_g
 
 For exams: `lesson_type: exam`, `required: true`, `feedback_trigger: "manual"`.
 
-## Publish Command
+## CLI Commands
+
+Initialize a new course folder:
 
 ```bash
-source content/.env.<workspace>
-cargo run --bin zippy -- courses push --content-dir content/<workspace> [--course <course-id>]
+zippy courses init
+# see `zippy courses init --help` for flags
 ```
 
-Or with the installed CLI:
+Push to the backend (validates automatically before committing):
+
 ```bash
-source content/.env.<workspace>
 zippy courses push --content-dir content/<workspace>
+zippy courses push --content-dir content/<workspace> --course <course-id>
 ```
 
-`--course <id>` filters to a single course (useful during development).
+`--course <id>` filters to a single course — useful during development.
 
-## Dry-Run Validate
+List courses:
 
-Before pushing, validate the compiled course payload against the server:
-
-```
-POST /admin/publish/validate
-Authorization: Bearer <api_key>
-x-org-id: <workspace_id>
-Content-Type: application/json
-
-<CoursePublishPayload JSON>
+```bash
+zippy courses list
 ```
 
-Returns:
-```json
-{
-  "valid": true,
-  "errors": [],
-  "warnings": ["No skill maps supplied; skill grouping may be incomplete"],
-  "stats": { "course": 1, "units": 25, "lessons": 25, "questions": 500 }
-}
-```
+Delete a course:
 
-The `zippy courses push` CLI runs this automatically before committing to the database.
+```bash
+zippy courses delete <id>
+```
