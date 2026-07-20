@@ -24,9 +24,10 @@ zippy --version
 macOS (arm64, amd64) and Linux (amd64, arm64). Pin a version with
 `ZIPPY_VERSION=v0.1.2`, or grab a tarball from the [Releases](https://github.com/heyzippy/zippy/releases) page.
 
-The installer also offers to drop the **coding-agent skill** into `.claude/skills/zippy`
-so Claude Code / Cursor / Codex know how to drive the CLI. Force it with `--with-skill`
-(or `ZIPPY_SKILL=1`), skip it with `--no-skill`. Install it separately any time:
+The installer also offers to install the **coding-agent skill**. The skill installer detects
+your agent(s) (Claude Code, Cursor, Codex, Windsurf) and links the skill into each. Force it
+with `--with-skill` (or `ZIPPY_SKILL=1`), skip it with `--no-skill`. Install it separately any
+time (add `--agent cursor` or `--agent all` to choose):
 
 ```sh
 curl -fsSL https://heyzippy.io/skills/install.sh | sh
@@ -138,14 +139,16 @@ content/<workspace>/
 ## Coding agents
 
 Zippy ships a skill in the [Agent Skills](https://agentskills.io) format so coding agents
-can drive the CLI correctly. It lives in [`skills/zippy/`](./skills/zippy/) in this repo
-and installs into `.claude/skills/zippy`:
+can drive the CLI correctly. It lives in [`skills/zippy/`](./skills/zippy/) in this repo. The
+installer detects your agent(s) (Claude Code, Cursor, Codex, Windsurf), installs the files once
+into a canonical `.agents/skills/zippy/`, and symlinks them into each agent's skills directory:
 
 ```sh
-curl -fsSL https://heyzippy.io/skills/install.sh | sh
+curl -fsSL https://heyzippy.io/skills/install.sh | sh              # detect + link
+curl -fsSL https://heyzippy.io/skills/install.sh | sh -s -- --agent all
 ```
 
-For other agents, point your rules/system prompt at
+For an agent not detected, point your rules/system prompt at
 [`skills/zippy/SKILL.md`](./skills/zippy/SKILL.md), or fetch the full plain-text reference:
 
 ```sh

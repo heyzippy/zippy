@@ -35,8 +35,10 @@ curl -fsSL https://heyzippy.io/install.sh | sh
 zippy --version
 ```
 
-The installer also offers to drop this coding-agent skill into `.claude/skills/zippy`.
-Force it non-interactively with `--with-skill` (or `ZIPPY_SKILL=1`); skip with `--no-skill`.
+The installer also offers to install this coding-agent skill. The skill installer detects your
+agent(s) (Claude Code, Cursor, Codex, Windsurf) and links the skill into each. Force it with
+`--with-skill` (or `ZIPPY_SKILL=1`), skip with `--no-skill`, or target one agent with
+`ZIPPY_AGENT=cursor`.
 
 ## Authenticate
 
