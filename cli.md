@@ -12,6 +12,7 @@ flags on any command at your installed version.
 
 - [Global concepts](#global-concepts)
 - [`zippy login`](#zippy-login)
+- [`zippy profile`](#zippy-profile)
 - [`zippy library push`](#zippy-library-push)
 - [`zippy courses`](#zippy-courses)
 - [`zippy lessons`](#zippy-lessons)
@@ -30,10 +31,14 @@ flags on any command at your installed version.
    - `ZIPPY_API_URL` backend base URL
    - `ZIPPY_API_KEY` workspace API key, sent as `Authorization: Bearer <key>`
    - `ZIPPY_WORKSPACE_ID` workspace slug, sent as the `x-org-id` header
-3. `~/.zippy/config` (TOML, mode `0600`): `api_key`, `workspace_id` (alias `org_id`), `base_url`, written by `zippy login`
+3. `~/.zippy/config` (TOML, mode `0600`): the **active profile**'s `api_key`, `workspace_id`,
+   `base_url`, written by `zippy login`. Choose another with `--profile` / `ZIPPY_PROFILE`.
 
 A `.env` in the working directory is auto-loaded at startup. Find your workspace id in Zippy
 under **Settings → General** ([app.heyzippy.io/teach/settings/general](https://app.heyzippy.io/teach/settings/general)).
+
+**Global flags**: `--profile <name>` (or `ZIPPY_PROFILE`) selects which saved login to use;
+`--verbose` / `-v` (or `ZIPPY_VERBOSE`) prints each API call and its response status.
 
 **Conventions**: `--dry-run` never mutates the backend. `--prune` deletes content removed since
 the last push (soft-delete/archive by default) and requires `--all` for `library push`.
@@ -42,10 +47,25 @@ validation or auth failure with a message naming what to fix.
 
 ## `zippy login`
 
-Browser OAuth loopback. Fetches a login URL, opens the browser, runs a local callback server
-(ports 7878-7900), and writes `~/.zippy/config`.
+Authenticate by email one-time code. Prompts for your email, the backend emails a 6-digit code,
+and on success it mints an API key with permissions `teacher:*` + `student:*` (so one key works
+for both the admin/teacher and student APIs), selects your workspace, and saves it to a profile.
 
-- `--base-url <URL>` (env `ZIPPY_API_URL`)
+- `--email <EMAIL>` (prompted if omitted)
+- `--workspace-id <SLUG>` (prompted/selected if you belong to more than one)
+- `--base-url <URL>` (env `ZIPPY_API_URL`, default `https://api.heyzippy.io`)
+- `--profile <NAME>`: save into this named profile and make it active
+
+## `zippy profile`
+
+Named logins, so you can keep several workspaces side by side.
+
+- `list`: show profiles (active marked `*`)
+- `use <NAME>`: set the active/default profile
+- `show [NAME]`: print a profile (redacted key)
+- `remove <NAME>`: delete a profile
+
+Select one per command with `--profile <NAME>` (global flag) or `ZIPPY_PROFILE`.
 
 ## `zippy library push`
 

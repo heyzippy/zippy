@@ -11,17 +11,34 @@ Every command that hits the backend resolves credentials in this order:
    - `ZIPPY_API_URL`: backend base URL (default `http://localhost:8086` in dev)
    - `ZIPPY_API_KEY`: workspace API key, sent as `Authorization: Bearer <key>`
    - `ZIPPY_WORKSPACE_ID`: workspace slug, sent as the `x-org-id` header
-3. **`~/.zippy/config`** (TOML, mode `0600`): `api_key`, `workspace_id` (alias `org_id`),
-   `base_url`. Written by `zippy login`.
+3. **`~/.zippy/config`** (TOML, mode `0600`): the **active profile**'s `api_key`,
+   `workspace_id`, `base_url`. Written by `zippy login`. Pick a different saved login with
+   `--profile <name>` / `ZIPPY_PROFILE`.
 
 A `.env` in the working directory is auto-loaded at startup.
 
 ## `zippy login`
 
-Browser OAuth loopback. Fetches a login URL from the backend, opens the browser,
-runs a local callback server (ports 7878–7900), and writes `~/.zippy/config`.
+Authenticate by email one-time code. Prompts for your email, the backend emails a 6-digit
+code, and on success it mints an API key with permissions `teacher:*` + `student:*` (works
+for both the admin/teacher and student APIs), selects your workspace, and saves everything to
+a profile in `~/.zippy/config`.
 
-- `--base-url <URL>` (env `ZIPPY_API_URL`)
+- `--email <EMAIL>` (prompted if omitted)
+- `--workspace-id <SLUG>` (prompted/selected if you belong to more than one)
+- `--base-url <URL>` (env `ZIPPY_API_URL`, default `https://api.heyzippy.io`)
+- `--profile <NAME>`: save into this profile and make it active (default: the active profile)
+
+## `zippy profile …`: named logins
+
+Keep several logins side by side and switch between them.
+
+- `list`: show profiles (the active one is marked `*`)
+- `use <NAME>`: set the active (default) profile
+- `show [NAME]`: print a profile (redacted key); defaults to the active/`--profile` one
+- `remove <NAME>`: delete a profile
+
+Select a profile per command with the global `--profile <NAME>` flag or `ZIPPY_PROFILE`.
 
 ## `zippy library push` (alias `zippy lib push`): standalone publisher
 
@@ -95,4 +112,6 @@ Publishes standalone catalogs (skill maps, skills, rubrics, evaluations, lessons
 
 - `--dry-run` never mutates the backend: use it to preview any push.
 - `--format json` (where available) prints machine-readable output.
+- `--profile <name>` / `ZIPPY_PROFILE` selects which saved login to use.
+- `--verbose` / `-v` (or `ZIPPY_VERBOSE`) prints each API call and its response status.
 - Exit non-zero on validation or auth failure; the message names what to fix.

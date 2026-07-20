@@ -36,7 +36,7 @@ curl -fsSL https://heyzippy.io/skills/install.sh | sh
 ## Authenticate
 
 ```sh
-zippy login          # browser OAuth loopback → writes ~/.zippy/config (0600)
+zippy login          # email one-time code → writes ~/.zippy/config (0600)
 ```
 
 For CI / headless, set environment variables instead (they override the config file):
@@ -93,7 +93,8 @@ zippy assets publish ./assets --dry-run      # upload changed media, write manif
 ## Command reference
 
 ```
-login        Authenticate via browser and save credentials
+login        Log in by email code; saves an API key to a profile
+profile      Manage login profiles (list, use, show, remove)
 library      Push standalone content (skill maps, skills, rubrics, evaluations, lessons)  [alias: lib]
 courses      Manage course packs (push, init, list, delete)
 lessons      Manage lessons (create, update, validate, list, init, save, push, push-dir)

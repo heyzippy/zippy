@@ -43,7 +43,7 @@ agent(s) (Claude Code, Cursor, Codex, Windsurf) and links the skill into each. F
 ## Authenticate
 
 ```bash
-zippy login          # browser OAuth loopback → writes ~/.zippy/config (0600)
+zippy login          # email one-time code → writes ~/.zippy/config (0600)
 ```
 
 `~/.zippy/config` is TOML: `api_key`, `workspace_id`, `base_url`. For CI / headless,
@@ -60,8 +60,19 @@ workspace id in Zippy under **Settings → General**
 (https://app.heyzippy.io/teach/settings/general) and use it as `--workspace-id` /
 `ZIPPY_WORKSPACE_ID`. Pushes always target **your** workspace, never a shared catalog.
 
-Credentials resolve in this order: **explicit CLI flags → env vars → `~/.zippy/config`**.
-Every publishing command also accepts `--base-url` / `--token` / `--workspace-id`.
+`zippy login` mints an API key with `teacher:*` + `student:*` permissions, so the same key
+works for both the admin/teacher and student APIs.
+
+Credentials resolve in this order: **explicit CLI flags → env vars → the active profile in
+`~/.zippy/config`**. Every publishing command also accepts `--base-url` / `--token` /
+`--workspace-id`.
+
+**Profiles**: keep several logins side by side: `zippy login --profile school-a`, switch with
+`zippy profile use <name>`, and target one per command with `--profile <name>` / `ZIPPY_PROFILE`.
+`zippy profile list/show/remove` manage them.
+
+**Verbose**: add `--verbose` / `-v` (or `ZIPPY_VERBOSE=1`) to any command to see each API call
+and its response status; handy when a push or login fails.
 
 ## The content model (30-second version)
 
