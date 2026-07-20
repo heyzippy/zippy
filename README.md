@@ -136,13 +136,17 @@ content/<workspace>/
 ## Coding agents
 
 Zippy ships a skill in the [Agent Skills](https://agentskills.io) format so coding agents
-can drive the CLI correctly. It lives in [`skills/zippy/`](./skills/zippy/) in this repo. The
-installer detects your agent(s) (Claude Code, Cursor, Codex, Windsurf), installs the files once
-into a canonical `.agents/skills/zippy/`, and symlinks them into each agent's skills directory:
+can drive the CLI correctly. It lives in [`skills/zippy/`](./skills/zippy/) in this repo.
+Following the Agent Skills convention, the installer puts the files once in
+`~/.agents/skills/zippy/` (the cross-client location) and symlinks each detected agent's own
+skills dir at it: `~/.claude/skills/zippy` (Claude Code), plus `~/.cursor`, `~/.codex`,
+`~/.windsurf` when present. It installs at **user scope** by default, so the skill is available
+in every project.
 
 ```sh
-curl -fsSL https://heyzippy.io/skills/install.sh | sh              # detect + link
-curl -fsSL https://heyzippy.io/skills/install.sh | sh -s -- --agent all
+curl -fsSL https://heyzippy.io/skills/install.sh | sh                      # detect + link
+curl -fsSL https://heyzippy.io/skills/install.sh | sh -s -- --agent claude,cursor
+curl -fsSL https://heyzippy.io/skills/install.sh | sh -s -- --project      # this project only
 ```
 
 For an agent not detected, point your rules/system prompt at
