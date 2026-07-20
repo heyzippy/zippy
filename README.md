@@ -43,26 +43,29 @@ For CI / headless, set environment variables instead (they override the config f
 ```sh
 export ZIPPY_API_URL="https://api.heyzippy.io"   # backend base URL
 export ZIPPY_API_KEY="bk_live_…"                 # workspace API key (Bearer)
-export ZIPPY_WORKSPACE_ID="zippydiscover"         # workspace slug (x-org-id)
+export ZIPPY_WORKSPACE_ID="<your-workspace-id>"         # workspace slug (x-org-id)
 ```
 
 Credentials resolve as: **explicit flags → environment variables → `~/.zippy/config`**.
+`zippy login` fills in your workspace id automatically; to set it by hand, find it in Zippy
+under **Settings → General** ([app.heyzippy.io/teach/settings/general](https://app.heyzippy.io/teach/settings/general)).
+Every push targets **your** workspace.
 
 ## Publish content
 
 The core loop is **author local files → dry-run → push → (prune)**.
 
 ```console
-$ zippy library push --all content/zippydiscover --dry-run
-zippy: resolving content/zippydiscover (dependency closure on)
+$ zippy library push --all content/my-workspace --dry-run
+zippy: resolving content/my-workspace (dependency closure on)
   skill_maps  psle-writing           (+ 6 skills)
   rubrics     p5-composition, psle-narrative
   lessons     lesson-nouns.mdx, lesson-adjectives.mdx
 zippy: dry-run — nothing sent. 3 catalogs, 11 items would publish.
 
-$ zippy library push --all content/zippydiscover --workspace-id zippydiscover
-zippy: published 11 items to workspace 'zippydiscover' ✓
-zippy: wrote content/zippydiscover/manifest.yaml
+$ zippy library push --all content/my-workspace --workspace-id <your-workspace-id>
+zippy: published 11 items to workspace 'my-workspace' ✓
+zippy: wrote content/my-workspace/manifest.yaml
 ```
 
 `zippy library push` is the standalone publisher for skill maps, skills, rubrics,
@@ -72,8 +75,8 @@ pulls its skills; an evaluation pulls its rubrics), so one push is complete.
 Course packs publish atomically:
 
 ```sh
-zippy courses push --content-dir content/zippydiscover/courses --dry-run
-zippy courses push --content-dir content/zippydiscover/courses --course primary-6
+zippy courses push --content-dir content/my-workspace/courses --dry-run
+zippy courses push --content-dir content/my-workspace/courses --course primary-6
 ```
 
 Lessons and assets have their own push paths:

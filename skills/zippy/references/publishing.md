@@ -16,21 +16,21 @@ Two publish surfaces, one mental model: **author local files → dry-run → pus
 zippy login                       # or export ZIPPY_API_KEY / ZIPPY_WORKSPACE_ID
 
 # 2. Preview — resolves dependency closure, sends nothing
-zippy library push --all content/zippydiscover --dry-run
+zippy library push --all content/my-workspace --dry-run
 
 # 3. Push everything under the workspace folder
-zippy library push --all content/zippydiscover --workspace-id zippydiscover
+zippy library push --all content/my-workspace --workspace-id <your-workspace-id>
 
 # 4. Prune content you deleted locally (diffs against manifest.yaml). Preview first.
-zippy library push --all content/zippydiscover --prune --dry-run
-zippy library push --all content/zippydiscover --prune -y
+zippy library push --all content/my-workspace --prune --dry-run
+zippy library push --all content/my-workspace --prune -y
 ```
 
 Push a single catalog and its dependencies:
 
 ```bash
-zippy library push content/zippydiscover/rubrics.yaml            # rubrics + referenced skills
-zippy library push content/zippydiscover/skill_maps.yaml --no-deps   # just the maps
+zippy library push content/my-workspace/rubrics.yaml            # rubrics + referenced skills
+zippy library push content/my-workspace/skill_maps.yaml --no-deps   # just the maps
 ```
 
 ## The manifest lock
@@ -41,14 +41,14 @@ deployed `files`, `skill_maps`, `skills`, `rubrics`, `evaluations`, keyed per
 
 - **Commit it.** It is how `--prune` knows what existed last time.
 - Pushing to a different `workspace_id` or `api_url` tracks its own entry — the same
-  content can be deployed to `zippydiscover` and a school workspace independently.
+  content can be deployed to two workspaces (e.g. staging and production) independently.
 
 ## Course packs
 
 ```bash
-zippy courses push --content-dir content/zippydiscover/courses --dry-run
-zippy courses push --content-dir content/zippydiscover/courses --course primary-6
-zippy courses push --content-dir content/zippydiscover/courses --prune -y
+zippy courses push --content-dir content/my-workspace/courses --dry-run
+zippy courses push --content-dir content/my-workspace/courses --course primary-6
+zippy courses push --content-dir content/my-workspace/courses --prune -y
 # --hard-delete-with-submissions also removes pruned lessons that have student
 # submissions (default: archive them).
 ```
@@ -63,13 +63,12 @@ zippy assets publish ./assets --dry-run
 zippy assets publish ./assets --prune -y
 ```
 
-## "Push to discover"
+## Your workspace id
 
-The public catalog workspace is `zippydiscover`. To publish official/public content:
-
-```bash
-zippy library push --all content/zippydiscover --workspace-id zippydiscover
-```
+Every push targets **your** workspace. Find your workspace id in Zippy under
+**Settings → General** (https://app.heyzippy.io/teach/settings/general), then pass it as
+`--workspace-id <your-workspace-id>` or set `ZIPPY_WORKSPACE_ID`. `zippy login` fills it
+in automatically, so after logging in you can omit it entirely.
 
 ## Safety rules
 

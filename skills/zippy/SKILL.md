@@ -4,8 +4,8 @@ description: >-
   Use when authoring or publishing Zippy learning content with the zippy CLI —
   courses, lessons, rubrics, skill maps, evaluations, and assets — and when
   logging in or managing a Zippy workspace. Triggers on "zippy", "zippy login",
-  "zippy library push", "zippy courses push", "push the rubric/skill map to
-  <workspace>", "push to discover", "publish a lesson", "zippy CLI".
+  "zippy library push", "zippy courses push", "push the rubric/skill map to my
+  workspace", "publish a lesson", "zippy CLI".
 ---
 
 # Zippy
@@ -50,8 +50,13 @@ set env vars instead (they override the config file):
 ```bash
 export ZIPPY_API_URL="https://api.heyzippy.io"   # backend base URL
 export ZIPPY_API_KEY="bk_live_…"                 # workspace API key (Bearer)
-export ZIPPY_WORKSPACE_ID="zippydiscover"         # workspace slug (sent as x-org-id)
+export ZIPPY_WORKSPACE_ID="<your-workspace-id>"         # workspace slug (sent as x-org-id)
 ```
+
+`zippy login` fills in your workspace id automatically. If you set it by hand, find your
+workspace id in Zippy under **Settings → General**
+(https://app.heyzippy.io/teach/settings/general) and use it as `--workspace-id` /
+`ZIPPY_WORKSPACE_ID`. Pushes always target **your** workspace, never a shared catalog.
 
 Credentials resolve in this order: **explicit CLI flags → env vars → `~/.zippy/config`**.
 Every publishing command also accepts `--base-url` / `--token` / `--workspace-id`.
@@ -77,12 +82,12 @@ dependencies go too.
 
 ```bash
 # One catalog (+ its dependencies), dry-run first
-zippy library push content/zippydiscover/rubrics.yaml --dry-run
-zippy library push content/zippydiscover/rubrics.yaml
+zippy library push content/my-workspace/rubrics.yaml --dry-run
+zippy library push content/my-workspace/rubrics.yaml
 
 # Everything under a workspace folder (required for --prune), targeting a workspace
-zippy library push --all content/zippydiscover --workspace-id zippydiscover
-zippy library push --all content/zippydiscover --prune -y      # delete removed items too
+zippy library push --all content/my-workspace --workspace-id <your-workspace-id>
+zippy library push --all content/my-workspace --prune -y      # delete removed items too
 
 # Push only the literal items, skip dependency resolution
 zippy library push skills.yaml --no-deps
@@ -91,9 +96,9 @@ zippy library push skills.yaml --no-deps
 Course packs publish atomically with `zippy courses push`:
 
 ```bash
-zippy courses push --content-dir content/zippydiscover/courses --dry-run
-zippy courses push --content-dir content/zippydiscover/courses --course primary-6
-zippy courses push --content-dir content/zippydiscover/courses --prune -y
+zippy courses push --content-dir content/my-workspace/courses --dry-run
+zippy courses push --content-dir content/my-workspace/courses --course primary-6
+zippy courses push --content-dir content/my-workspace/courses --prune -y
 ```
 
 Lessons and assets have their own push paths:
@@ -113,7 +118,7 @@ Always `--dry-run` first on anything with `--prune`. See `references/publishing.
 zippy lessons init --title "Nouns" --root ./lessons     # scaffold an MDX lesson
 zippy lessons validate --content ./lessons/nouns.mdx    # validate MDX before pushing
 zippy rubrics create --name "P5 Composition" --definition rubric.json
-zippy courses init --content-dir content/zippydiscover --course primary-6
+zippy courses init --content-dir content/my-workspace --course primary-6
 ```
 
 ## Manage & inspect
@@ -124,7 +129,7 @@ zippy rubrics list
 zippy lessons list
 zippy workspaces list           # alias: zippy orgs list
 zippy workspaces create
-zippy evaluations run --content-dir content/zippydiscover --course primary-6 \
+zippy evaluations run --content-dir content/my-workspace --course primary-6 \
   --question-id p6-u05-q20 --answer "student answer text"   # alias: zippy eval run
 ```
 
