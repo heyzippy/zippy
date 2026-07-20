@@ -93,33 +93,29 @@ zippy assets publish ./assets --dry-run      # upload changed media, write manif
 ## Command reference
 
 ```
-Zippy CLI, publish content, manage courses and workspaces
-
-Commands:
-  login        Authenticate via browser and save credentials
-  courses      Manage courses (push, init, list, delete)
-  workspaces   Manage workspaces (create, list)          [alias: orgs]
-  evaluations  Run evaluations                            [alias: eval]
-  skills       Inspect skills from local content files
-  lessons      Manage lessons (create, update, validate, list, init, save, push, push-dir)
-  rubrics      Manage rubrics (create, update, list)
-  library      Push standalone content (skill maps, skills, rubrics, evaluations, lessons)  [alias: lib]
-  assets       Manage workspace assets (upload, list, publish)   [alias: files]
+login        Authenticate via browser and save credentials
+library      Push standalone content (skill maps, skills, rubrics, evaluations, lessons)  [alias: lib]
+courses      Manage course packs (push, init, list, delete)
+lessons      Manage lessons (create, update, validate, list, init, save, push, push-dir)
+rubrics      Manage rubrics (create, update, list)
+assets       Manage workspace assets (upload, list, publish)   [alias: files]
+workspaces   Manage workspaces (create, list)                  [alias: orgs]
+evaluations  Run evaluations                                   [alias: eval]
+skills       Inspect skills from local content files
 ```
 
 | Task | Command |
 |------|---------|
-| Install | `curl -fsSL https://heyzippy.io/install.sh \| sh` |
 | Authenticate | `zippy login` |
 | Publish a catalog (+deps) | `zippy library push <file>` |
 | Publish a workspace folder | `zippy library push --all <folder> [--prune -y]` |
 | Publish a course pack | `zippy courses push --content-dir <dir> [--course ID]` |
-| Batch-push lessons | `zippy lessons push-dir <dir> -r` |
-| Publish assets | `zippy assets publish <dir> [--prune]` |
 | Preview only | add `--dry-run` |
 | List things | `zippy {courses,rubrics,lessons,workspaces} list` |
 
-Run `zippy <command> --help` for the full flag list on any command.
+**Full flags and every subcommand: [`cli.md`](./cli.md).** Or run `zippy <command> --help`.
+Download binaries from [Releases](https://github.com/heyzippy/zippy/releases); guides and the
+coding-agent skill live at [heyzippy.io/docs](https://heyzippy.io/docs).
 
 ## The content model
 
