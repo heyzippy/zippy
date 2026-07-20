@@ -1,0 +1,4 @@
+SKILL.md
+references/cli.md
+references/content.md
+references/publishing.md
