@@ -1,60 +1,159 @@
+<div align="center">
+
 # Zippy CLI
 
-Zippy is a content + learning platform. This repo distributes the `zippy` CLI used to author courses, lessons, rubrics, and assets against a Zippy server.
+**AI grading and content authoring for schools, tutoring centres, and teachers.**
 
-The Zippy backend, frontends, and CLI source live in [heyzippy/platform](https://github.com/heyzippy/platform) (private).
+`zippy` authors and publishes learning content — courses, lessons, rubrics, skill maps,
+evaluations, and assets — to a Zippy workspace from local files, so you keep content in
+git and ship it without the browser editor.
+
+[Docs](https://heyzippy.io/docs) · [Coding-agent skill](https://heyzippy.io/docs/skills) · [llms-full.txt](https://heyzippy.io/llms-full.txt) · [Releases](https://github.com/heyzippy/zippy/releases)
+
+</div>
+
+---
 
 ## Install
 
 ```sh
 curl -fsSL https://heyzippy.io/install.sh | sh
+zippy --version
 ```
 
-Pin a version:
+macOS (arm64, amd64) and Linux (amd64, arm64). Pin a version with
+`ZIPPY_VERSION=v0.1.2`, or grab a tarball from the [Releases](https://github.com/heyzippy/zippy/releases) page.
+
+The installer also offers to drop the **coding-agent skill** into `.claude/skills/zippy`
+so Claude Code / Cursor / Codex know how to drive the CLI. Force it with `--with-skill`
+(or `ZIPPY_SKILL=1`), skip it with `--no-skill`. Install it separately any time:
 
 ```sh
-curl -fsSL https://heyzippy.io/install.sh | ZIPPY_VERSION=v0.1.0 sh
+curl -fsSL https://heyzippy.io/skills/install.sh | sh
 ```
 
-Or download a tarball directly from the [Releases](https://github.com/heyzippy/zippy/releases) page. Supported platforms: macOS (arm64, amd64), Linux (amd64, arm64).
-
-## Usage
+## Authenticate
 
 ```sh
-zippy login                      # authenticate via browser, saves to ~/.zippy/config
-zippy courses push               # publish course pack to the backend
-zippy courses init               # scaffold a new course folder
-zippy courses list               # list courses in the current workspace
-zippy workspaces create          # create a workspace (alias: zippy orgs)
-zippy workspaces list
-zippy evaluations run            # run an evaluation against course content (alias: zippy eval)
-zippy skills                     # inspect skills from local content files
-zippy lessons {create,update,validate,list,init,save,push}
-zippy rubrics  {create,update,list}
-zippy assets   {upload,list,publish}   # alias: zippy files
+zippy login          # browser OAuth loopback → writes ~/.zippy/config (0600)
 ```
 
-Run `zippy <subcommand> --help` for full flags.
+For CI / headless, set environment variables instead (they override the config file):
 
-## MCP servers
+```sh
+export ZIPPY_API_URL="https://api.heyzippy.io"   # backend base URL
+export ZIPPY_API_KEY="bk_live_…"                 # workspace API key (Bearer)
+export ZIPPY_WORKSPACE_ID="zippydiscover"         # workspace slug (x-org-id)
+```
 
-The Zippy backend exposes [Model Context Protocol](https://modelcontextprotocol.io) tools over Streamable HTTP, so Claude Code, Cursor, and other MCP clients can drive content generation, grading, and assignment directly:
+Credentials resolve as: **explicit flags → environment variables → `~/.zippy/config`**.
 
-| Endpoint        | Audience           | Auth                                                 |
-|-----------------|--------------------|------------------------------------------------------|
-| `/mcp`          | Admin / authors    | `Authorization: Bearer bk_live_…` + `x-org-id: <ws>` |
-| `/student/mcp`  | Student workspace  | Student API key                                      |
+## Publish content
 
-Tools mirror the CLI surface (courses, lessons, rubrics, grading) and stream incremental results.
+The core loop is **author local files → dry-run → push → (prune)**.
 
-## Skills
+```console
+$ zippy library push --all content/zippydiscover --dry-run
+zippy: resolving content/zippydiscover (dependency closure on)
+  skill_maps  psle-writing           (+ 6 skills)
+  rubrics     p5-composition, psle-narrative
+  lessons     lesson-nouns.mdx, lesson-adjectives.mdx
+zippy: dry-run — nothing sent. 3 catalogs, 11 items would publish.
 
-The `skills/` directory contains author-facing skill prompts used by Zippy agents (`zippy_course`, `zippy_grade`, `zippy_lesson`, `zippy_rubric`, …). Drop them into a Claude Code plugin or copy them into your own agent setup.
+$ zippy library push --all content/zippydiscover --workspace-id zippydiscover
+zippy: published 11 items to workspace 'zippydiscover' ✓
+zippy: wrote content/zippydiscover/manifest.yaml
+```
+
+`zippy library push` is the standalone publisher for skill maps, skills, rubrics,
+evaluations, and lessons. It resolves the **dependency closure** by default (a skill map
+pulls its skills; an evaluation pulls its rubrics), so one push is complete.
+
+Course packs publish atomically:
+
+```sh
+zippy courses push --content-dir content/zippydiscover/courses --dry-run
+zippy courses push --content-dir content/zippydiscover/courses --course primary-6
+```
+
+Lessons and assets have their own push paths:
+
+```sh
+zippy lessons push-dir ./lessons -r          # batch-push every .mdx
+zippy assets publish ./assets --dry-run      # upload changed media, write manifest
+```
+
+> Always `--dry-run` before anything with `--prune`. Prune soft-deletes (archives)
+> content you removed locally, diffed against the committed `manifest.yaml`.
+
+## Command reference
+
+```
+Zippy CLI — publish content, manage courses and workspaces
+
+Commands:
+  login        Authenticate via browser and save credentials
+  courses      Manage courses (push, init, list, delete)
+  workspaces   Manage workspaces (create, list)          [alias: orgs]
+  evaluations  Run evaluations                            [alias: eval]
+  skills       Inspect skills from local content files
+  lessons      Manage lessons (create, update, validate, list, init, save, push, push-dir)
+  rubrics      Manage rubrics (create, update, list)
+  library      Push standalone content (skill maps, skills, rubrics, evaluations, lessons)  [alias: lib]
+  assets       Manage workspace assets (upload, list, publish)   [alias: files]
+```
+
+| Task | Command |
+|------|---------|
+| Install | `curl -fsSL https://heyzippy.io/install.sh \| sh` |
+| Authenticate | `zippy login` |
+| Publish a catalog (+deps) | `zippy library push <file>` |
+| Publish a workspace folder | `zippy library push --all <folder> [--prune -y]` |
+| Publish a course pack | `zippy courses push --content-dir <dir> [--course ID]` |
+| Batch-push lessons | `zippy lessons push-dir <dir> -r` |
+| Publish assets | `zippy assets publish <dir> [--prune]` |
+| Preview only | add `--dry-run` |
+| List things | `zippy {courses,rubrics,lessons,workspaces} list` |
+
+Run `zippy <command> --help` for the full flag list on any command.
+
+## The content model
+
+Content lives under `content/<workspace>/`:
+
+```
+content/<workspace>/
+├── courses/                 # reserved: course packs (zippy courses push)
+├── skill_maps.yaml          # standalone catalogs (zippy library push)
+├── skills.yaml
+├── rubrics.yaml
+├── evaluations.yaml
+├── lesson-*.mdx
+└── manifest.yaml            # generated deploy lock — commit this
+```
+
+## Coding agents
+
+Zippy ships a skill in the [Agent Skills](https://agentskills.io) format so coding agents
+can drive the CLI correctly. It lives in [`skills/zippy/`](./skills/zippy/) in this repo
+and installs into `.claude/skills/zippy`:
+
+```sh
+curl -fsSL https://heyzippy.io/skills/install.sh | sh
+```
+
+For other agents, point your rules/system prompt at
+[`skills/zippy/SKILL.md`](./skills/zippy/SKILL.md), or fetch the full plain-text reference:
+
+```sh
+curl -fsSL https://heyzippy.io/llms-full.txt
+```
 
 ## Links
 
-- Docs: [heyzippy.io](https://heyzippy.io)
+- Docs: [heyzippy.io/docs](https://heyzippy.io/docs)
 - Issues: [github.com/heyzippy/zippy/issues](https://github.com/heyzippy/zippy/issues)
+- The Zippy backend, frontends, and CLI source live in `heyzippy/platform` (private).
 
 ## License
 
