@@ -4,8 +4,8 @@
 
 **AI grading and content authoring for schools, tutoring centres, and teachers.**
 
-`zippy` authors and publishes learning content — courses, lessons, rubrics, skill maps,
-evaluations, and assets — to a Zippy workspace from local files, so you keep content in
+`zippy` authors and publishes learning content, courses, lessons, rubrics, skill maps,
+evaluations, and assets, to a Zippy workspace from local files, so you keep content in
 git and ship it without the browser editor.
 
 [Docs](https://heyzippy.io/docs) · [Coding-agent skill](https://heyzippy.io/docs/skills) · [llms-full.txt](https://heyzippy.io/llms-full.txt) · [Releases](https://github.com/heyzippy/zippy/releases)
@@ -61,7 +61,7 @@ zippy: resolving content/my-workspace (dependency closure on)
   skill_maps  psle-writing           (+ 6 skills)
   rubrics     p5-composition, psle-narrative
   lessons     lesson-nouns.mdx, lesson-adjectives.mdx
-zippy: dry-run — nothing sent. 3 catalogs, 11 items would publish.
+zippy: dry-run, nothing sent. 3 catalogs, 11 items would publish.
 
 $ zippy library push --all content/my-workspace --workspace-id <your-workspace-id>
 zippy: published 11 items to workspace 'my-workspace' ✓
@@ -92,7 +92,7 @@ zippy assets publish ./assets --dry-run      # upload changed media, write manif
 ## Command reference
 
 ```
-Zippy CLI — publish content, manage courses and workspaces
+Zippy CLI, publish content, manage courses and workspaces
 
 Commands:
   login        Authenticate via browser and save credentials
@@ -132,7 +132,7 @@ content/<workspace>/
 ├── rubrics.yaml
 ├── evaluations.yaml
 ├── lesson-*.mdx
-└── manifest.yaml            # generated deploy lock — commit this
+└── manifest.yaml            # generated deploy lock: commit this
 ```
 
 ## Coding agents
@@ -160,4 +160,4 @@ curl -fsSL https://heyzippy.io/llms-full.txt
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT, see [LICENSE](./LICENSE).

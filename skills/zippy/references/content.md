@@ -14,7 +14,7 @@ content/<workspace>/
 ├── rubrics.yaml
 ├── evaluations.yaml
 ├── lesson-*.mdx
-└── manifest.yaml            # generated deploy lock — COMMIT THIS
+└── manifest.yaml            # generated deploy lock: COMMIT THIS
 ```
 
 `content-dir` for a `library push` defaults to the file's parent (or the `--all` folder).
@@ -71,7 +71,7 @@ kind: evaluations
 content:
   - id: p6-comprehension
     name: P6 Comprehension
-    rubrics: [ p5-composition ]        # rubric ids — pulled in by dependency closure
+    rubrics: [ p5-composition ]        # rubric ids: pulled in by dependency closure
 ```
 
 ### Lessons (`lesson-*.mdx`)

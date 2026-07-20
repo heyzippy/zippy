@@ -1,8 +1,8 @@
 ---
 name: zippy
 description: >-
-  Use when authoring or publishing Zippy learning content with the zippy CLI —
-  courses, lessons, rubrics, skill maps, evaluations, and assets — and when
+  Use when authoring or publishing Zippy learning content (courses, lessons,
+  rubrics, skill maps, evaluations, and assets) with the zippy CLI, and when
   logging in or managing a Zippy workspace. Triggers on "zippy", "zippy login",
   "zippy library push", "zippy courses push", "push the rubric/skill map to my
   workspace", "publish a lesson", "zippy CLI".
@@ -11,21 +11,21 @@ description: >-
 # Zippy
 
 Zippy is a content + grading platform for schools, tutoring centres, and teachers.
-The `zippy` CLI authors and **publishes** that content — courses, lessons, rubrics,
-skill maps, evaluations, and media assets — to a Zippy workspace from local files,
+The `zippy` CLI authors and **publishes** that content (courses, lessons, rubrics,
+skill maps, evaluations, and media assets) to a Zippy workspace from local files,
 so you can keep content in git and ship it without the browser editor.
 
 - Docs: https://heyzippy.io/docs
 - Full LLM reference (curl-able): https://heyzippy.io/llms-full.txt
 - Skill file (this file): https://heyzippy.io/docs/skills
 
-Deeper references live next to this file in `references/` — read them when a task
+Deeper references live next to this file in `references/`, read them when a task
 needs the detail:
 
-- `references/cli.md` — every command and flag, credential resolution, env vars.
-- `references/content.md` — the content directory model and each catalog's format
+- `references/cli.md`: every command and flag, credential resolution, env vars.
+- `references/content.md`: the content directory model and each catalog's format
   (skill maps, skills, rubrics, evaluations, lessons).
-- `references/publishing.md` — the publish workflow: dependency closure, the
+- `references/publishing.md`: the publish workflow: dependency closure, the
   `manifest.yaml` lock, `--prune`, `--dry-run`, and courses vs. standalone library.
 
 ## Install the CLI
@@ -69,7 +69,7 @@ Content lives under `content/<workspace>/`:
 - **Standalone library catalogs** sit at the workspace-folder level as YAML/MDX files:
   `skill_maps.yaml`, `skills.yaml`, `rubrics.yaml`, `evaluations.yaml`, `lesson-*.mdx`.
 - A generated `manifest.yaml` records what was last deployed (per `{api_url, workspace_id}`)
-  so `--prune` can delete what you removed. Commit it — it is the deploy lock.
+  so `--prune` can delete what you removed. Commit it, it is the deploy lock.
 
 See `references/content.md` for each file's shape.
 
@@ -155,10 +155,10 @@ zippy evaluations run --content-dir content/my-workspace --course primary-6 \
 - **`--dry-run` before `--prune`.** Prune soft-deletes (archives) removed content; with
   `--all` it diffs against `manifest.yaml`. `-y`/`--yes` skips the confirmation.
 - **`--all` is required to push a whole folder** and to use `--prune`.
-- **Dependency closure is on by default** — push a skill map and its skills follow. Use
+- **Dependency closure is on by default**: push a skill map and its skills follow. Use
   `--no-deps` to push only the literal items.
 - **Commit `manifest.yaml`.** It is the per-workspace deploy lock; without it `--prune`
   can't tell what to remove.
 - **Never put API keys in content files.** Use `zippy login` or `ZIPPY_API_KEY`.
-- `courses/` under a workspace folder is reserved for course packs — `library push --all`
+- `courses/` under a workspace folder is reserved for course packs: `library push --all`
   skips it; publish courses with `zippy courses push`.

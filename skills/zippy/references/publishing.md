@@ -15,7 +15,7 @@ Two publish surfaces, one mental model: **author local files → dry-run → pus
 # 1. Authenticate once
 zippy login                       # or export ZIPPY_API_KEY / ZIPPY_WORKSPACE_ID
 
-# 2. Preview — resolves dependency closure, sends nothing
+# 2. Preview: resolves dependency closure, sends nothing
 zippy library push --all content/my-workspace --dry-run
 
 # 3. Push everything under the workspace folder
@@ -40,7 +40,7 @@ deployed `files`, `skill_maps`, `skills`, `rubrics`, `evaluations`, keyed per
 `{api_url, workspace_id}` deployment.
 
 - **Commit it.** It is how `--prune` knows what existed last time.
-- Pushing to a different `workspace_id` or `api_url` tracks its own entry — the same
+- Pushing to a different `workspace_id` or `api_url` tracks its own entry: the same
   content can be deployed to two workspaces (e.g. staging and production) independently.
 
 ## Course packs
@@ -53,7 +53,7 @@ zippy courses push --content-dir content/my-workspace/courses --prune -y
 # submissions (default: archive them).
 ```
 
-Course packs publish **atomically** — the whole pack validates and commits as a unit.
+Course packs publish **atomically**, the whole pack validates and commits as a unit.
 
 ## Assets
 
@@ -75,5 +75,5 @@ in automatically, so after logging in you can omit it entirely.
 - `--dry-run` before every `--prune`.
 - `--prune` requires `--all`.
 - Prune soft-deletes (archives) by default; nothing is hard-deleted unless you pass
-  `--hard-delete-with-submissions` (courses) — and even then only lessons with submissions.
+  `--hard-delete-with-submissions` (courses), and even then only lessons with submissions.
 - Keep credentials in `zippy login` / `ZIPPY_API_KEY`, never in content files or `manifest.yaml`.
