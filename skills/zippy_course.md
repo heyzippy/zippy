@@ -1,11 +1,18 @@
 ---
-name: zippy-courses
-description: Use when the user wants to create, structure, or publish a Zippy course pack — course.yaml, workspace.yaml, unit organization. Activate when user mentions zippy course, course pack, units.yaml, or workspace structure.
+name: zippy_course
+description: Zippy Course Pack Format
+tags:
+  - zippy
+  - content
+  - generation
 ---
 
 # Zippy Course Pack Format
 
-Prerequisite: if `zippy` is not installed or you need to authenticate, see the `zippy` skill first.
+Course-pack publishing is **CLI-only** (the layout is a directory tree of
+YAML + MDX files). The browser branch of `zippy_execution` does NOT apply
+here — if you're invoked in the browser runtime, `final({ result: "course
+packs are CLI-only; run the distri CLI from your terminal" })` and stop.
 
 A course pack is a directory of YAML and Markdown files pushed via the CLI.
 
@@ -190,7 +197,7 @@ Content that floats when scrolled past.
   rows={10}
   required={true}
   skill_ids={["SK-CONTENT"]}
-  evaluation={{
+  evaluation=\{{
     "id": "eval-my-eval"
   }}
 />
@@ -200,36 +207,48 @@ Content that floats when scrolled past.
 
 For MCQ include `options={[{"id":"a","text":"Option A","correct":true},{"id":"b","text":"Option B"}]}`.
 
-For save-only (no AI feedback): `evaluation={{}}` or `evaluation={{"evaluation_group":"group-id"}}`.
+For save-only (no AI feedback): `evaluation=\{{}}` or `evaluation=\{{"evaluation_group":"group-id"}}`.
+
+Grading strategy follows the `kind` automatically (mcq → answer-key, essay/free_text → AI). Do NOT add `evaluation.type` unless overriding; never use `"type": "engine"` on a text/essay question. Inputs are text-only by default — add `allowedInputs={["text","image"]}` (or `"voice"`) only to let a text answer also accept an image / voice.
 
 For exams: `lesson_type: exam`, `required: true`, `feedback_trigger: "manual"`.
 
-## CLI Commands
-
-Initialize a new course folder:
+## Publish Command
 
 ```bash
-zippy courses init
-# see `zippy courses init --help` for flags
+source content/.env.<workspace>
+cargo run --bin zippy -- courses push --content-dir content/<workspace> [--course <course-id>]
 ```
 
-Push to the backend (validates automatically before committing):
-
+Or with the installed CLI:
 ```bash
+source content/.env.<workspace>
 zippy courses push --content-dir content/<workspace>
-zippy courses push --content-dir content/<workspace> --course <course-id>
 ```
 
-`--course <id>` filters to a single course — useful during development.
+`--course <id>` filters to a single course (useful during development).
 
-List courses:
+## Dry-Run Validate
 
-```bash
-zippy courses list
+Before pushing, validate the compiled course payload against the server:
+
+```
+POST /admin/publish/validate
+Authorization: Bearer <api_key>
+x-org-id: <workspace_id>
+Content-Type: application/json
+
+<CoursePublishPayload JSON>
 ```
 
-Delete a course:
-
-```bash
-zippy courses delete <id>
+Returns:
+```json
+{
+  "valid": true,
+  "errors": [],
+  "warnings": ["No skill maps supplied; skill grouping may be incomplete"],
+  "stats": { "course": 1, "units": 25, "lessons": 25, "questions": 500 }
+}
 ```
+
+The `zippy courses push` CLI runs this automatically before committing to the database.

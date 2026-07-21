@@ -1,22 +1,35 @@
 ---
-name: zippy-rubrics
-description: Use when the user wants to author a Zippy rubric — descriptor/range/score ratings, MOE SEAB-aligned scoring, criteria with levels. Activate when user mentions zippy rubric, scoring rubric, MOE composition scoring, descriptor rubric, or assessment criteria.
+name: zippy_rubric
+description: Zippy Rubric Format
+tags: [zippy, content, generation]
 ---
 
 # Zippy Rubric Format
 
-Prerequisite: if `zippy` is not installed or you need to authenticate, see the `zippy` skill first.
-
 ## Workflow
 
-1. Plan with `write_todos` — decide on criteria, levels, and rating type.
-2. Write the rubric JSON to a local file using the Write tool.
-3. Create or update via CLI:
-   ```bash
-   zippy rubrics create --file <path>
-   zippy rubrics update <id> --file <path>
+Rubric uses the SAME unified content tools as every other content type —
+there is no rubric-specific tool.
+
+1. Plan with `write_todos` (criteria, levels, rating type, save).
+2. **Get the id.** If your prompt header contains a `rubric_id:` line
+   (set by the FE when the teacher clicked Create Rubric or opened
+   `/new` → Rubric), use that EXACT id. Otherwise mint one with
+   `init_content({ content_type: "rubric", title: "<rubric name>" })` and
+   use the returned `rubricId`.
+3. Build the rubric JSON in-context and save it in ONE call:
    ```
-4. Verify: `zippy rubrics list`.
+   save_content({ content_type: "rubric", id: "<rubricId>", content: <rubric JSON>, title: "<name>" })
+   ```
+   `save_content` validates against the rubric schema, writes the
+   `content_items[<rubricId>]` working copy (the editor renders live —
+   drafts ARE the preview), and persists. It returns `{ ok, valid }`.
+   Do NOT `db_put` the draft separately — `save_content` is the single
+   write path.
+4. If `valid: false`, fix the JSON and call `save_content` again
+   (use `validate_content({ content_type: "rubric", id })` for a
+   read-only dry run if needed).
+5. `final({ result: { rubric_id, name } })`.
 
 ## JSON Structure
 
@@ -25,8 +38,8 @@ Each criterion MUST have `id`, `label`, `ratings` (array with SAME length as `sc
 
 **CRITICAL — scale.levels format:**
 ```json
-correct:  "levels": [{"label": "Beginning"}, {"label": "Developing"}]
-wrong:    "levels": ["Beginning", "Developing"]  <- WILL FAIL — must be objects with "label" key
+✅ "levels": [{"label": "Beginning"}, {"label": "Developing"}]
+❌ "levels": ["Beginning", "Developing"]  ← WILL FAIL — must be objects with "label" key
 ```
 
 ## Rating Types
