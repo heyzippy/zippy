@@ -1,0 +1,45 @@
+name: skills
+
+# The coding-agent skill is fetched at install time straight from this repo's
+# `main` by https://heyzippy.io/skills/install.sh. Nothing else validates that
+# contract, so a commit that reshapes skills/ breaks every new install silently
+# — which is exactly what happened between the v0.1.5 skill sync and its fix.
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'scripts/check-skills.sh'
+      - '.github/workflows/skills.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - 'scripts/check-skills.sh'
+  schedule:
+    # Weekly, so a broken install surfaces even if nothing touches skills/.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  contract:
+    name: skill tree satisfies install.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the tree in this ref
+        run: ./scripts/check-skills.sh
+
+  live:
+    name: published installer works against main
+    # Only meaningful once the ref is on main — the installer is pinned to main.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run the real installer into a temp dir
+        run: |
+          set -euo pipefail
+          dest="$(mktemp -d)/zippy"
+          curl -fsSL https://heyzippy.io/skills/install.sh | sh -s -- --dir "$dest"
+          test -f "$dest/SKILL.md" || { echo "::error::installer ran but SKILL.md is missing"; exit 1; }
+          echo "installed:"; find "$dest" -type f | sort
