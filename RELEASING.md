@@ -62,5 +62,23 @@ The coding-agent skill under `skills/zippy/` is the single source of truth the i
 download from (`raw.githubusercontent.com/heyzippy/zippy/main/skills/...`). Keep it in step
 with the CLI when commands change, and keep `skills/manifest.txt` listing every skill file.
 
+**This skill is hand-maintained here. Do not "sync" it from the platform repo.** The platform's
+`agents/distri-skills/*.md` are the *in-product* runtime skills for the browser editor and
+`distri run` — they describe MCP tools (`zippy_validate_content`, `load_skill`) that a user's
+Claude Code or Cursor install cannot call, and one of them states outright that "there is no
+bespoke CLI". Copying them into `skills/` is what broke every install for 3.5 weeks after
+v0.1.5: it deleted `manifest.txt` and `skills/zippy/`, so `install.sh` aborted on its first
+fetch. The two trees serve different runtimes and are not interchangeable.
+
+Before pushing anything that touches `skills/`, run the contract check — the same loop
+`install.sh` performs, against the working tree:
+
+```sh
+./scripts/check-skills.sh
+```
+
+CI runs it on every PR touching `skills/` (`.github/workflows/skills.yml`) and exercises the
+real published installer on `main` and weekly.
+
 > A VM/SSH-based provisioner exists in the private `infra` repo, but the local build above is
 > the simplest reliable path and is what current releases use.
